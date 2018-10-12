@@ -2205,7 +2205,7 @@
     "logger-sharelatex": {
       "version": "1.5.7",
       "from": "git+https://github.com/sharelatex/logger-sharelatex.git#ho-stackdriver",
-      "resolved": "git+https://github.com/sharelatex/logger-sharelatex.git#850ad31776751fc5547a120125994acc9e2cdde3",
+      "resolved": "git+https://github.com/sharelatex/logger-sharelatex.git#c6bc7276e9ea763d2245d61b60bc3e2eeb6aa01a",
       "dependencies": {
         "ansi-regex": {
           "version": "0.2.1",
