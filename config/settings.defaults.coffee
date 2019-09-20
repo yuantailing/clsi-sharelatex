@@ -64,7 +64,7 @@ if process.env["DOCKER_RUNNER"]
 	catch error
 		console.log error, "could not load seccom profile from #{seccomp_profile_path}"
 
-	module.exports.path.synctexBaseDir = -> "/compile"	
+	module.exports.path.synctexBaseDir = -> "$COMPILE_DIR"
 	
 	module.exports.path.sandboxedCompilesHostDir = process.env["COMPILES_HOST_DIR"]
 

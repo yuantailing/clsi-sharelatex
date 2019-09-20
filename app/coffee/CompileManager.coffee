@@ -226,7 +226,7 @@ module.exports = CompileManager =
 			CompileManager._runSynctex  project_id, user_id, command, (error, stdout) ->
 				return callback(error) if error?
 				logger.log project_id: project_id, user_id:user_id, page: page, h: h, v:v, stdout: stdout, "synctex pdf output"
-				callback null, CompileManager._parseSynctexFromPdfOutput(stdout, base_dir)
+				callback null, CompileManager._parseSynctexFromPdfOutput(stdout, base_dir.replace('$COMPILE_DIR', getCompileDir(project_id, user_id)))
 
 	_checkFileExists: (path, callback = (error) ->) ->
 		synctexDir = Path.dirname(path)
