@@ -11,8 +11,7 @@ _ = require "underscore"
 
 logger.info "using docker runner"
 
-usingSiblingContainers = () ->
-	Settings?.path?.sandboxedCompilesHostDir?
+usingSiblingContainers = () -> true
 
 module.exports = DockerRunner =
 	ERR_NOT_DIRECTORY: new Error("not a directory")
@@ -22,14 +21,8 @@ module.exports = DockerRunner =
 
 	run: (project_id, command, directory, image, timeout, environment, callback = (error, output) ->) ->
 
-		if usingSiblingContainers()
-			_newPath = Settings.path.sandboxedCompilesHostDir
-			logger.log {path: _newPath}, "altering bind path for sibling containers"
-			# Server Pro, example:
-			#   '/var/lib/sharelatex/data/compiles/<project-id>'
-			#   ... becomes ...
-			#   '/opt/sharelatex_data/data/compiles/<project-id>'
-			directory = Path.join(Settings.path.sandboxedCompilesHostDir, Path.basename(directory))
+		if DockerRunner.mountSource?
+			directory = DockerRunner.mountSource + directory.slice('/var/lib/sharelatex'.length)
 
 		volumes = {}
 		volumes[directory] = "/compile"
@@ -355,4 +348,11 @@ module.exports = DockerRunner =
 			, oneHour = 60 * 60 * 1000
 		, randomDelay
 
+	mountSource: null
+
 DockerRunner.startContainerMonitor()
+
+dockerode.getContainer(fs.readFileSync("/proc/1/cpuset").toString().trim().split('/')[2]).inspect (err, data) ->
+	foo = (m) ->
+		m.Destination == "/var/lib/sharelatex"
+	DockerRunner.mountSource = data.Mounts.filter(foo)[0].Source
