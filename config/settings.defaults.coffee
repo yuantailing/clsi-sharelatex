@@ -55,6 +55,7 @@ if process.env["DOCKER_RUNNER"]
 				HOME: "/tmp"
 			socketPath: "/var/run/docker.sock"
 			user: process.env["TEXLIVE_IMAGE_USER"] or "tex"
+		synctexUseDocker: process["SYNCTEX_USE_DOCKER"] == "true"
 		expireProjectAfterIdleMs: 24 * 60 * 60 * 1000
 		checkProjectsIntervalMs: 10 * 60 * 1000
 
@@ -64,7 +65,8 @@ if process.env["DOCKER_RUNNER"]
 	catch error
 		console.log error, "could not load seccom profile from #{seccomp_profile_path}"
 
-	module.exports.path.synctexBaseDir = -> "/compile"	
+	if module.exports.clsi.dockerRunner
+		module.exports.path.synctexBaseDir = -> "/compile"
 	
 	module.exports.path.sandboxedCompilesHostDir = process.env["COMPILES_HOST_DIR"]
 

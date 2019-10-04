@@ -15,7 +15,7 @@ fse = require "fs-extra"
 os = require("os")
 async = require "async"
 Errors = require './Errors'
-CommandRunner = require "./CommandRunner"
+CommandRunner = if Settings.clsi?.synctexUseDocker then require "./CommandRunner" else require "./LocalCommandRunner"
 
 getCompileName = (project_id, user_id) ->
 	if user_id? then "#{project_id}-#{user_id}" else project_id
@@ -202,7 +202,7 @@ module.exports = CompileManager =
 		base_dir = Settings.path.synctexBaseDir(compileName)
 		file_path = base_dir + "/" + file_name
 		compileDir = getCompileDir(project_id, user_id)
-		synctex_path =  "#{base_dir}/output.pdf"
+		synctex_path =  if Settings.clsi?.synctexUseDocker then "#{base_dir}/output.pdf" else "#{compileDir}/output.pdf"
 		command = ["code", synctex_path, file_path, line, column]
 		fse.ensureDir compileDir, (error) ->
 			if error?
@@ -217,7 +217,7 @@ module.exports = CompileManager =
 		compileName = getCompileName(project_id, user_id)
 		compileDir = getCompileDir(project_id, user_id)
 		base_dir = Settings.path.synctexBaseDir(compileName)
-		synctex_path =  "#{base_dir}/output.pdf"
+		synctex_path =  if Settings.clsi?.synctexUseDocker then "#{base_dir}/output.pdf" else "#{compileDir}/output.pdf"
 		command = ["pdf", synctex_path, page, h, v]
 		fse.ensureDir compileDir, (error) ->
 			if error?
