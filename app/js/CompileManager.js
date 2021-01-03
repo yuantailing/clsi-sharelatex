@@ -33,7 +33,7 @@ const fse = require('fs-extra')
 const os = require('os')
 const async = require('async')
 const Errors = require('./Errors')
-const CommandRunner = require('./CommandRunner')
+const CommandRunner = Settings.clsi.synctexUseDocker ? require('./CommandRunner') : require('./LocalCommandRunner')
 
 const getCompileName = function (project_id, user_id) {
   if (user_id != null) {
@@ -427,7 +427,7 @@ module.exports = CompileManager = {
     const base_dir = Settings.path.synctexBaseDir(compileName)
     const file_path = base_dir + '/' + file_name
     const compileDir = getCompileDir(project_id, user_id)
-    const synctex_path = `${base_dir}/output.pdf`
+    const synctex_path = Settings.clsi.synctexUseDocker ? `${base_dir}/output.pdf` : `${compileDir}/output.pdf`
     const command = ['code', synctex_path, file_path, line, column]
     CompileManager._runSynctex(project_id, user_id, command, function (
       error,
@@ -451,7 +451,7 @@ module.exports = CompileManager = {
     const compileName = getCompileName(project_id, user_id)
     const compileDir = getCompileDir(project_id, user_id)
     const base_dir = Settings.path.synctexBaseDir(compileName)
-    const synctex_path = `${base_dir}/output.pdf`
+    const synctex_path = Settings.clsi.synctexUseDocker ? `${base_dir}/output.pdf` : `${compileDir}/output.pdf`
     const command = ['pdf', synctex_path, page, h, v]
     CompileManager._runSynctex(project_id, user_id, command, function (
       error,

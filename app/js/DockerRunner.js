@@ -13,11 +13,7 @@ const ONE_HOUR_IN_MS = 60 * 60 * 1000
 logger.info('using docker runner')
 
 function usingSiblingContainers() {
-  return (
-    Settings != null &&
-    Settings.path != null &&
-    Settings.path.sandboxedCompilesHostDir != null
-  )
+  return true;
 }
 
 let containerMonitorTimeout
@@ -34,21 +30,8 @@ const DockerRunner = {
     compileGroup,
     callback
   ) {
-    if (usingSiblingContainers()) {
-      const _newPath = Settings.path.sandboxedCompilesHostDir
-      logger.log(
-        { path: _newPath },
-        'altering bind path for sibling containers'
-      )
-      // Server Pro, example:
-      //   '/var/lib/sharelatex/data/compiles/<project-id>'
-      //   ... becomes ...
-      //   '/opt/sharelatex_data/data/compiles/<project-id>'
-      directory = Path.join(
-        Settings.path.sandboxedCompilesHostDir,
-        Path.basename(directory)
-      )
-    }
+    if (DockerRunner.mountSource)
+      directory = DockerRunner.mountSource + directory.slice('/var/lib/sharelatex'.length)
 
     const volumes = { [directory]: '/compile' }
 
@@ -615,5 +598,11 @@ const DockerRunner = {
 }
 
 DockerRunner.startContainerMonitor()
+
+dockerode.getContainer(fs.readFileSync("/proc/1/cpuset").toString().trim().split('/')[2]).inspect((err, data) => {
+  foo = (m) =>
+    m.Destination == "/var/lib/sharelatex"
+  DockerRunner.mountSource = data.Mounts.filter(foo)[0].Source
+})
 
 module.exports = DockerRunner

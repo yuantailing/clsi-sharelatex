@@ -89,6 +89,7 @@ if (process.env.DOCKER_RUNNER) {
       user: process.env.TEXLIVE_IMAGE_USER || 'tex'
     },
     optimiseInDocker: true,
+    synctexUseDocker: process.env.SYNCTEX_USE_DOCKER == 'true',
     expireProjectAfterIdleMs: 24 * 60 * 60 * 1000,
     checkProjectsIntervalMs: 10 * 60 * 1000
   }
@@ -140,7 +141,9 @@ if (process.env.DOCKER_RUNNER) {
     }
   }
 
-  module.exports.path.synctexBaseDir = () => '/compile'
+  if (module.exports.clsi.dockerRunner) {
+    module.exports.path.synctexBaseDir = () => '/compile'
+  }
 
   module.exports.path.sandboxedCompilesHostDir = process.env.COMPILES_HOST_DIR
 
